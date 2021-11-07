@@ -1,4 +1,5 @@
 package client;
+import java.awt.Color;
 import java.net.MalformedURLException;
 import java.rmi.ConnectException;
 import java.rmi.Naming;
@@ -6,6 +7,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 
 import Gui.GuiClient1;
@@ -31,7 +33,7 @@ public class ChatClient3  extends UnicastRemoteObject implements ChatClient3IF {
 	public String name;
 	private String idUser ; 
 	public ChatServerIF serverIF;
-	
+	public JList jl; 
 	protected boolean connectionProblem = false;
 
 	
@@ -41,11 +43,12 @@ public class ChatClient3  extends UnicastRemoteObject implements ChatClient3IF {
 	 * a port no passed in argument to super
 	 * @throws RemoteException
 	 */
-	public ChatClient3(GuiClient1 guiclient, String userName, String idUser ) throws RemoteException {
+	public ChatClient3(GuiClient1 guiclient, String userName, String idUser, JList jl ) throws RemoteException {
 		super();
 		this.guiclient = guiclient;
 		this.name = userName;
-		this.idUser = idUser; 
+		this.idUser = idUser;
+		this.jl = jl ;
 		this.clientServiceName = "ClientListenService_" + userName;
 	}
 
@@ -101,10 +104,14 @@ public class ChatClient3  extends UnicastRemoteObject implements ChatClient3IF {
 	@Override
 	public void messageFromServer(String message, String idUser1) throws RemoteException {
 		System.out.println( message );
+		System.out.println("message From server in chat lient" + idUser1);
+		
 		for (GuiMainChat guichat : guiclient.getGuiChat()) {
 			if(guichat.idUserReceive.equals(idUser1)) {
 				guichat.vtMess.add(message);
 				guichat.listMess.updateUI();
+				guichat.packet.getLblUser().setForeground(Color.red);
+				jl.updateUI();
 			}
 
 		}
@@ -117,8 +124,7 @@ public class ChatClient3  extends UnicastRemoteObject implements ChatClient3IF {
 	 */
 	@Override
 	public void updateUserList(String currentUsers, String idUser) throws RemoteException {
-
-		
+		if(!this.idUser.equals(idUser))
 		this.guiclient.addCardAndUser(currentUsers, idUser );
 	}
 	
@@ -130,6 +136,7 @@ public class ChatClient3  extends UnicastRemoteObject implements ChatClient3IF {
 			}
 		}	
 	}
+	
 	public String getIdUser() {
 		return this.idUser; 
 	}

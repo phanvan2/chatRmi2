@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 
+import Class.PacketUser;
 import client.ChatClient3;
 
 import javax.swing.JButton;
@@ -32,16 +33,18 @@ public class GuiMainChat extends JPanel implements ActionListener {
 	public String username = ""; 
 	public  String idUser = "" ;
 	public String idUserReceive = ""; 
+	public PacketUser packet; // label user  list user in guiclient
 	public boolean group ; // if true => group , if false => people
-	
+	public boolean chatpublic ; 
 	/**
 	 * Create the panel.
 	 */
-	public GuiMainChat(String username, String idUserReceive, ChatClient3 chatClient) {
+	public GuiMainChat(String username, String idUserReceive, ChatClient3 chatClient, PacketUser packet) {
 		this.username = username ; 
 		this.idUser = chatClient.getIdUser() ; 
 		this.chatClient = chatClient; 
 		this.idUserReceive = idUserReceive ; 
+		this.packet = packet ; 
 		this.setLayout(new BorderLayout());
 		vtMess.add("hello"); 
 		vtMess.add(""+  idUserReceive); 
@@ -67,7 +70,7 @@ public class GuiMainChat extends JPanel implements ActionListener {
 		panelControl.add(btnSendMess, BorderLayout.EAST);
 		
 		this.group = checkGroup(); 
-
+		this.chatpublic = checkChatPublic();
 	}
 	public static void main(String[] args) {
 		JFrame f = new JFrame("chat");
@@ -76,6 +79,7 @@ public class GuiMainChat extends JPanel implements ActionListener {
 		//f.getContentPane().add(new GuiMainChat("ah", "12"));
 		f.setVisible(true);
 	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -108,10 +112,18 @@ public class GuiMainChat extends JPanel implements ActionListener {
 		String mess =  message + ": Me" ; 
 		vtMess.add(mess);
 		listMess.updateUI();
-		if(!group)
-			chatClient.serverIF.sendPP(idUser, privateMessage, chatClient.getIdUser() );
-		else 
+		
+		if(group)
 			chatClient.serverIF.sendGroup(idUser, privateMessage,  chatClient.getIdUser());
+		else if(chatpublic) {
+			System.out.println("guimainchat ");
+			chatClient.serverIF.sendToAll(privateMessage, idUser );
+
+		}
+
+		else 
+			chatClient.serverIF.sendPP(idUser, privateMessage, chatClient.getIdUser() );
+
 
 	}
 	
@@ -119,6 +131,12 @@ public class GuiMainChat extends JPanel implements ActionListener {
 		if(this.idUserReceive.contains("group"))
 			return true  ;
 		return false  ; 
+	}
+	
+	public boolean checkChatPublic() {
+		if(this.idUserReceive.equals("111publicChat")) 
+			return true;
+		return false ; 
 	}
 
 

@@ -87,7 +87,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	 */
 	public void updateChat(String name, String nextPost) throws RemoteException {
 		String message =  name + " : " + nextPost + "\n";
-		sendToAll(message);
+	//	sendToAll(message);
 	}
 	
 	/**
@@ -125,6 +125,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 		try{
 			ChatClient3IF nextClient = ( ChatClient3IF )Naming.lookup("rmi://" + details[1] + "/" + details[2]);
 			Chatter newchatter = new Chatter(details[0], nextClient, details[3]) ; 
+			newchatter.getClient().updateUserList("public chat", "111publicChat");
 			String[] currentUsers = getUserList();	
 			String[] idUsers = getIdUserList(); 
 			for (int i = 0 ; i < currentUsers.length ; i ++ ) {
@@ -135,7 +136,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 			chatters.addElement(newchatter);
 			System.out.println("idUser: " + details[3]);
 			
-			sendToAll("[Server] : " + details[0] + " has joined the group.\n");
+		//	sendToAll("[Server] : " + details[0] + " has joined the group.\n");
 			
 			updateUserList();		
 		}
@@ -202,15 +203,17 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	 * Send a message to all users
 	 * @param newMessage
 	 */
-	public void sendToAll(String newMessage){	
-//		for(Chatter c : chatters){
-//			try {
-//				c.getClient().messageFromServer(newMessage);
-//			} 
-//			catch (RemoteException e) {
-//				e.printStackTrace();
-//			}
-//		}	
+	@Override
+	public void sendToAll(String newMessage, String idchat) throws RemoteException{	
+		System.out.println("send to all in chat server");
+		for(Chatter c : chatters){
+			try {
+				c.getClient().messageFromServer(newMessage, idchat);
+			} 
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}	
 	}
 
 	
@@ -233,20 +236,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	}
 	
 
-	/**
-	 * A method to send a private message to selected clients
-	 * The integer array holds the indexes (from the chatters vector) 
-	 * of the clients to send the message to
-	 */
-	@Override
-	public void sendPM(int[] privateGroup, String privateMessage) throws RemoteException{
-//		Chatter pc;
-//		for(int i : privateGroup){
-//			pc= chatters.elementAt(i);
-//			pc.getClient().messageFromServer(privateMessage);
-//		}
-	}
-	
+
 	@Override
 	public void sendPP(String idUser, String privateMessage, String idUser1) throws RemoteException{
 		//Chatter pc;
@@ -272,6 +262,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 			break ; 
 		}
 	}
+	
 	
 	public Chatter findChatter(String username) {
 		for (Chatter chatter : chatters) {

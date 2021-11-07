@@ -32,6 +32,8 @@ import java.awt.CardLayout;
 import java.awt.GridLayout;
 import javax.swing.border.LineBorder;
 
+import Class.PacketUser;
+
 /**
  * 
  * @author phanvan2
@@ -52,7 +54,7 @@ public class GuiClient1 extends JFrame {
 	private String username ; 
 	private ChatClient3 chatClient;
 	private String idUser ; 
-	private Vector<String> vtUser = new Vector<String>();
+	private Vector<PacketUser> vtUser = new Vector<PacketUser>();
 	private Vector<GuiMainChat> vtmainchats = new Vector<GuiMainChat>() ;  
 	JList listUser ; 
 	private JTextField txtnputMember;
@@ -80,6 +82,7 @@ public class GuiClient1 extends JFrame {
 	 * Create the frame.
 	 */
 	public GuiClient1(String username) {
+		this.setTitle("Chat Rmi");
 		this.username = username ; 
 		this.idUser = Math.random() + "" + this.username ;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -194,8 +197,10 @@ public class GuiClient1 extends JFrame {
 	 * @param idUser
 	 */
 	public void addCardAndUser(String nameUser, String idUser) {
-		vtUser.add(nameUser);
-		GuiMainChat mainchat = new GuiMainChat(nameUser, idUser, this.chatClient) ; 
+		
+		PacketUser packett =  new PacketUser(nameUser, new JLabel(nameUser)) ;
+		vtUser.add(packett);
+		GuiMainChat mainchat = new GuiMainChat(nameUser, idUser, this.chatClient, packett) ; 
 		vtmainchats.add(mainchat); 
 		panelViewChat.add(nameUser, mainchat ) ; 
 		listUser.updateUI();
@@ -241,8 +246,9 @@ public class GuiClient1 extends JFrame {
 				JList theList = (JList) e.getSource(); 
 
 				int index = theList.locationToIndex(e.getPoint()); 
-				String selectString = (String)theList.getModel().getElementAt(index);
-				card.show(panelViewChat, selectString);
+				PacketUser selectpacket = (PacketUser)theList.getModel().getElementAt(index);
+				selectpacket.getLblUser().setForeground(Color.black);
+				card.show(panelViewChat, selectpacket.getName());
 						
 				
 			}
@@ -256,7 +262,7 @@ public class GuiClient1 extends JFrame {
 		String cleanedUserName = userName.replaceAll("\\s+","_");
 		cleanedUserName = userName.replaceAll("\\W+","_");
 		try {		
-			chatClient = new ChatClient3(this, cleanedUserName, this.idUser);
+			chatClient = new ChatClient3(this, cleanedUserName, this.idUser, listUser );
 			chatClient.startClient();
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -281,11 +287,12 @@ class UserCell implements ListCellRenderer{
 		JPanel panel = new JPanel();
 	
 		panel.setLayout(new BorderLayout());
-		JLabel text = new JLabel(value.toString()); 
-		panel.add(text, BorderLayout.CENTER);
+		PacketUser packet = (PacketUser) value; 
+		panel.add(packet.getLblUser(), BorderLayout.CENTER);
 	
 		  if (isSelected) {
 		      panel.setBackground(new Color(59, 148, 237));
+		      packet.getLblUser().setForeground(Color.black);
 		  } else { // when don't select
 		       
 		  }

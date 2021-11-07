@@ -21,7 +21,6 @@ public interface ChatServerIF extends Remote {
 	
 	public void leaveChat(String idUser)throws RemoteException;
 	
-	public void sendPM(int[] privateGroup, String privateMessage)throws RemoteException;
 
 	/**
 	 * 
@@ -31,6 +30,9 @@ public interface ChatServerIF extends Remote {
 	 * @throws RemoteException
 	 */
 	public void sendPP(String idUser, String privateMessage, String idUser1) throws RemoteException;
+	
+	public void sendToAll(String newMessage, String idchat) throws RemoteException; 
+
 	
 	public void sendGroup(String idGroup, String mess, String idSender) throws RemoteException; 
 	
