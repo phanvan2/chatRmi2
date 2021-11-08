@@ -204,11 +204,12 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	 * @param newMessage
 	 */
 	@Override
-	public void sendToAll(String newMessage, String idchat) throws RemoteException{	
+	public void sendToAll(String newMessage, String idchat, String idSender) throws RemoteException{	
 		System.out.println("send to all in chat server");
 		for(Chatter c : chatters){
 			try {
-				c.getClient().messageFromServer(newMessage, idchat);
+				if(!c.getIdUser().equals(idSender))
+					c.getClient().messageFromServer(newMessage, idchat);
 			} 
 			catch (RemoteException e) {
 				e.printStackTrace();
@@ -223,13 +224,18 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	@Override
 	public void leaveChat(String idUser) throws RemoteException{
 		
-//		for(Chatter c : chatters){
-//			if(!c.getIdUser().equals(idUser)){
-//				chatters.remove(c);
-//				c.getClient().removeListUser(idUser);
-//				break;
-//			}
-//		}		
+		for(Chatter c : chatters){
+			if(c.getIdUser().equals(idUser)) {
+				chatters.remove(c);
+				break; 
+			}
+			
+		}	
+		for(Chatter c : chatters){
+			System.out.println("Xóa ở " + c.name);
+			c.getClient().removeListUser(idUser);
+
+		}	
 //		if(!chatters.isEmpty()){
 //			updateUserList();
 //		}			

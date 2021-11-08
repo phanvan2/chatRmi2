@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.rmi.RemoteException;
 import java.sql.Time;
 import java.time.LocalDateTime;
@@ -64,6 +66,28 @@ public class GuiMainChat extends JPanel implements ActionListener {
 		txtInputMess = new JTextField();
 		panelControl.add(txtInputMess, BorderLayout.CENTER);
 		txtInputMess.setColumns(10);
+		txtInputMess.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					handleSendMess(); 
+				}
+			}
+		});
 		
 		btnSendMess = new JButton("Send");
 		btnSendMess.addActionListener(this);
@@ -84,16 +108,7 @@ public class GuiMainChat extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getSource() == btnSendMess){
-			System.out.println("send"); 
-			String message = txtInputMess.getText();
-			txtInputMess.setText("");
-			try {
-				sendPrivate(idUserReceive ,message);
-			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			System.out.println("Sending message : " + message);
+			handleSendMess();
 		}
 	}
 	
@@ -117,7 +132,7 @@ public class GuiMainChat extends JPanel implements ActionListener {
 			chatClient.serverIF.sendGroup(idUser, privateMessage,  chatClient.getIdUser());
 		else if(chatpublic) {
 			System.out.println("guimainchat ");
-			chatClient.serverIF.sendToAll(privateMessage, idUser );
+			chatClient.serverIF.sendToAll(privateMessage, idUser, chatClient.getIdUser() );
 
 		}
 
@@ -125,6 +140,18 @@ public class GuiMainChat extends JPanel implements ActionListener {
 			chatClient.serverIF.sendPP(idUser, privateMessage, chatClient.getIdUser() );
 
 
+	}
+	
+	public void handleSendMess() {
+		String message = txtInputMess.getText();
+		txtInputMess.setText("");
+		try {
+			sendPrivate(idUserReceive ,message);
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		System.out.println("Sending message : " + message);
 	}
 	
 	public Boolean checkGroup() {

@@ -208,7 +208,11 @@ public class GuiClient1 extends JFrame {
 	
 
 	public void removeCardUser(String nameUser, String idUser) {
-		vtUser.remove((Object) nameUser);
+		for (int i = 1; i < vtUser.size(); i ++ ) {
+			if(vtUser.elementAt(i).getName().equals(nameUser)) {
+				vtUser.removeElementAt(i);
+			}
+		}
 		listUser.updateUI();
 	}
 	
