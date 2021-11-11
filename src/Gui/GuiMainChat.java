@@ -2,6 +2,7 @@ package Gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -19,6 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 
+import Class.Constant;
 import Class.PacketUser;
 import client.ChatClient3;
 
@@ -49,7 +51,7 @@ public class GuiMainChat extends JPanel implements ActionListener {
 		this.packet = packet ; 
 		this.setLayout(new BorderLayout());
 		vtMess.add("hello"); 
-		vtMess.add(""+  idUserReceive); 
+		vtMess.add(""+  username); 
 		listMess =  new JList(vtMess);
 		listMess.updateUI();
 		listMess.setCellRenderer(new MessCell());
@@ -93,8 +95,8 @@ public class GuiMainChat extends JPanel implements ActionListener {
 		btnSendMess.addActionListener(this);
 		panelControl.add(btnSendMess, BorderLayout.EAST);
 		
-		this.group = checkGroup(); 
-		this.chatpublic = checkChatPublic();
+		this.group = new Constant().checkGroup(idUserReceive) ;  
+		this.chatpublic = new Constant().checkChatPublic(idUserReceive);
 	}
 	public static void main(String[] args) {
 		JFrame f = new JFrame("chat");
@@ -123,8 +125,8 @@ public class GuiMainChat extends JPanel implements ActionListener {
 	 * @throws RemoteException
 	 */
 	private void sendPrivate(String idUser, String message) throws RemoteException {
-		String privateMessage = chatClient.name + ": " + message + "\n";
-		String mess =  message + ": Me" ; 
+		String privateMessage ="<html><b>"+ chatClient.name + "</b>: " + message + "</html>";
+		String mess = "<html>"+  message + ": <b>Me</b></html>" ; 
 		vtMess.add(mess);
 		listMess.updateUI();
 		
@@ -154,17 +156,17 @@ public class GuiMainChat extends JPanel implements ActionListener {
 		System.out.println("Sending message : " + message);
 	}
 	
-	public Boolean checkGroup() {
-		if(this.idUserReceive.contains("group"))
-			return true  ;
-		return false  ; 
-	}
-	
-	public boolean checkChatPublic() {
-		if(this.idUserReceive.equals("111publicChat")) 
-			return true;
-		return false ; 
-	}
+//	public Boolean checkGroup() {
+//		if(this.idUserReceive.contains("group"))
+//			return true  ;
+//		return false  ; 
+//	}
+//	
+//	public boolean checkChatPublic() {
+//		if(this.idUserReceive.equals("111publicChat")) 
+//			return true;
+//		return false ; 
+//	}
 
 
 
@@ -181,12 +183,11 @@ class MessCell implements ListCellRenderer{
 	
 		panel.setLayout(new BorderLayout());
 		String s = value.toString();
-	
+		JLabel text = new JLabel(s); 
+		text.setFont(new Font("Verdana", Font.PLAIN, 14)) ; 
 		if( s.contains("Me")) {
-			JLabel text = new JLabel(s); 
 			panel.add(text, BorderLayout.EAST);
 		}else {
-			JLabel text = new JLabel(s); 
 			panel.add(text, BorderLayout.CENTER);
 		}
 		

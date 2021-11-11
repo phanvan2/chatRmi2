@@ -9,6 +9,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 import java.util.Vector;
 
+import Class.Constant;
 import client.ChatClient3IF;
 
 /**
@@ -34,7 +35,7 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 	 */	
 	public static void main(String[] args) {
 		startRMIRegistry();	
-		String hostName = "localhost";
+		String hostName = new Constant().HOST;
 		String serviceName = "GroupChatService";
 		
 		if(args.length == 2){
@@ -125,6 +126,8 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 		try{
 			ChatClient3IF nextClient = ( ChatClient3IF )Naming.lookup("rmi://" + details[1] + "/" + details[2]);
 			Chatter newchatter = new Chatter(details[0], nextClient, details[3]) ; 
+			
+			// add group public chat new chatter
 			newchatter.getClient().updateUserList("public chat", "111publicChat");
 			String[] currentUsers = getUserList();	
 			String[] idUsers = getIdUserList(); 
@@ -260,8 +263,15 @@ public class ChatServer extends UnicastRemoteObject implements ChatServerIF {
 		for (Group gr : groups) {
 			if(gr.getIdGroup().equals(idGroup)) {
 				for (Chatter chatter : gr.getChatter()) {
-					if(! idSender.equals(chatter.getIdUser()))
-					chatter.getClient().messageFromServer(mess, idGroup);
+					if(! idSender.equals(chatter.getIdUser())) {
+						try {
+							chatter.getClient().messageFromServer(mess, idGroup);
+
+						}catch(Exception e) {
+
+						}
+
+					}
 					
 				}
 			}
