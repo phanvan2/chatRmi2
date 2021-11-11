@@ -1,14 +1,19 @@
 package Class;
 
+import java.awt.Font;
+
 import javax.swing.JLabel;
 
 public class PacketUser {
 	private String name ;
 	private JLabel lblUser ; 
-	public PacketUser(String name, JLabel lblUser) {
+	private String idUser ; 
+	public PacketUser(String name, JLabel lblUser, String idUser) {
 		super();
 		this.name = name;
 		this.lblUser = lblUser;
+		this.idUser = idUser ; 
+		lblUser.setFont(new Font("Meiryo", Font.PLAIN, 13));
 	}
 	public String getName() {
 		return name;
@@ -21,6 +26,9 @@ public class PacketUser {
 	}
 	public void setTxtUser(JLabel lblUser) {
 		this.lblUser = lblUser;
+	}
+	public String getIdUser() {
+		return this.idUser; 
 	}
 	
 
